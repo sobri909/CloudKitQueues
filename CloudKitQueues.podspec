@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "CloudKitQueues"
   s.version      = "0.0.1"
-  s.summary      = "A queue manager for simplifying large batch operations on CloudKit records"
+  s.summary      = "A queue manager for simplifying individual and batch operations on CloudKit records"
   s.homepage     = "https://github.com/sobri909/CloudKitQueues"
   s.author       = { "Matt Greenfield" => "matt@bigpaua.com" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
