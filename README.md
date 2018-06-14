@@ -18,7 +18,7 @@ manage failures or retries on batch operations. Simply call `fetch()`, `save()`,
 individual CKRecords and CKRecordIDs, and CloudKitQueues will ensure that they are batched 
 together in the most efficient manner.
 
-The same methods are suitable both for single standalone operations and large batch opertaions. 
+The same methods are suitable both for single standalone operations and large batch operations. 
 CloudKitQueues will ensure that the they are performed optimally in all cases. 
 
 ## Individual Completion Closures 
@@ -50,13 +50,13 @@ CloudKitQueues manages two sets of queues:
 - **Slow Queue:** For slow operations, eg backups, restores, and deletes that the user is
   not expecting to see the immediate results of.
 
-So for example when fetching a record you can choose to either `fetch(ckRecordId)` or 
-`slowFetch(ckRecordId)`. If saving changes to a record, you can choose to either `save(ckRecord)` 
-or `slowSave(ckRecord)`. When deleting a record, you can choose to either `delete(ckRecordId)` 
-or `slowDelete(ckRecordId)`. 
+So for example when fetching a record you can choose to either `queue.fetch(ckRecordId)` or 
+`queue.slowFetch(ckRecordId)`. If saving changes to a record, you can choose to either
+`queue.save(ckRecord)` or `queue.slowSave(ckRecord)`. When deleting a record, you can choose to
+either `queue.delete(ckRecordId)` or `queue.slowDelete(ckRecordId)`. 
 
 CloudKitQueues manages these queues internally so that "fast" actions are batched together and 
-performed as quickly as possible, and "slow" actions are batched together and performed when  
+performed as quickly as possible, and "slow" actions are batched together and performed when 
 CloudKit determines that the energy and network conditions best suit.
 
 ## Setup
@@ -75,6 +75,8 @@ let privateQueue = CloudKitQueue(for: CKContainer.default().privateCloudDatabase
 ```
 
 #### Fast Queue Actions
+
+Note that all `save()`, `fetch()`, and `delete()` methods accept optional completion closures. 
 
 ```swift
 // save the CKRecords for all cars
