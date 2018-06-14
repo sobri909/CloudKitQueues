@@ -9,7 +9,17 @@ and CKRecordIDs. The actions are then intelligently batched together, to get the
 least amount of CloudKit requests. 
 
 This makes it possible to get the best possible performance out of CloudKit, with the minimum 
-number of requests within CloudKit's request limits. 
+number of requests within CloudKit's request limits.
+
+## No Manual Queue Management Required
+
+With CloudKitQueues you no longer need to manage batch CloudKit operations in your loops, nor 
+manage failures or retries on batch operations. Simply call `fetch()`, `save()`, `delete()` on 
+individual CKRecords and CKRecordIDs, and CloudKitQueues will ensure that they are batched 
+together in the most efficient manner.
+
+The same methods are suitable both for single standalone operations and large batch opertaions. 
+CloudKitQueues will ensure that the they are performed optimally in all cases. 
 
 ## Individual Completion Closures 
 
@@ -28,21 +38,25 @@ queue.fetch(ckRecordId) { ckRecord, error in
 
 ## Automatic Rate Limit Management
 
-CloudKitQueues observes and respects CloudKit's rate limit timeouts, and automatifally retries once the 
+CloudKitQueues observes and respects CloudKit's rate limit timeouts, and automatically retries once the 
 timeouts permit. 
 
 ## Fast and Slow Queues
 
-CloudKitQueues manages two sets of queues: one for fast operations (eg actions for which the user is 
-waiting to see the result of in the UI), and one slow operations (eg record backups, restores, and 
-deletes that the user is not expecting to see the immediate results of).
+CloudKitQueues manages two sets of queues: 
 
-So for example if fetching a record, you can choose to either `fetch(ckRecordId)` or `slowFetch(ckRecordId)`.
-Or if saving changes to a record, you can choose to either `save(ckRecord)` or 
-`slowSave(ckRecord)`.
+- **Fast Queue:** For fast operations, eg actions for which the user is waiting to see the result
+  in the UI.
+- **Slow Queue:** For slow operations, eg backups, restores, and deletes that the user is
+  not expecting to see the immediate results of.
+
+So for example when fetching a record you can choose to either `fetch(ckRecordId)` or 
+`slowFetch(ckRecordId)`. If saving changes to a record, you can choose to either `save(ckRecord)` 
+or `slowSave(ckRecord)`. When deleting a record, you can choose to either `delete(ckRecordId)` 
+or `slowDelete(ckRecordId)`. 
 
 CloudKitQueues manages these queues internally so that "fast" actions are batched together and 
-happen as quickly as possible, and "slow" actions are batched together and performed when  
+performed as quickly as possible, and "slow" actions are batched together and performed when  
 CloudKit determines that the energy and network conditions best suit.
 
 ## Setup
@@ -55,12 +69,12 @@ Or just drop [CloudKitQueue.swift](https://github.com/sobri909/CloudKitQueues/bl
 
 ## Examples
 
-#### Fast Queue Actions
-
 ```swift
 let publicQueue = CloudKitQueue(for: CKContainer.default().publicCloudDatabase)
 let privateQueue = CloudKitQueue(for: CKContainer.default().privateCloudDatabase)
 ```
+
+#### Fast Queue Actions
 
 ```swift
 // save the CKRecords for all cars
