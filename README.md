@@ -1,6 +1,6 @@
 # CloudKitQueues
 
-A queue manager for simplifying batch operations on CloudKit records.
+A queue manager for simplifying both individual and batch operations on CloudKit records.
 
 ## Seamless Individual and Batch Operations 
 
