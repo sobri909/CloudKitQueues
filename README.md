@@ -51,9 +51,13 @@ CloudKitQueues manages two sets of queues:
   not expecting to see the immediate results of.
 
 So for example when fetching a record you can choose to either `queue.fetch(ckRecordId)` or 
-`queue.slowFetch(ckRecordId)`. If saving changes to a record, you can choose to either
-`queue.save(ckRecord)` or `queue.slowSave(ckRecord)`. When deleting a record, you can choose to
-either `queue.delete(ckRecordId)` or `queue.slowDelete(ckRecordId)`. 
+`queue.slowFetch(ckRecordId)`.
+
+If saving changes to a record, you can choose to either `queue.save(ckRecord)` or
+`queue.slowSave(ckRecord)`.
+
+When deleting a record, you can choose to either `queue.delete(ckRecordId)` or 
+`queue.slowDelete(ckRecordId)`. 
 
 CloudKitQueues manages these queues internally so that "fast" actions are batched together and 
 performed as quickly as possible, and "slow" actions are batched together and performed when 
