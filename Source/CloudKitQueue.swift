@@ -325,12 +325,12 @@ public class CloudKitQueue {
 
                         self.sync {
                             for ckRecord in batch {
-                                if let completions = self.recordsToSave[ckRecord] {
-                                    self.recordsToSave.removeValue(forKey: ckRecord)
+                                guard let completions = self.recordsToSave[ckRecord] else { continue }
 
-                                    for completion in completions {
-                                        completion(ckRecord, error)
-                                    }
+                                self.recordsToSave.removeValue(forKey: ckRecord)
+
+                                for completion in completions {
+                                    completion(ckRecord, error)
                                 }
                             }
                         }
@@ -338,13 +338,13 @@ public class CloudKitQueue {
                 }
 
                 self.queue.async {
-                    self.slowSaveOperation = nil
+                    self.saveOperation = nil
 
-                    if self.recordsToSlowSave.isEmpty {
-                        self.queuedSlowSaves = 0
+                    if self.recordsToSave.isEmpty {
+                        self.queuedSaves = 0
 
                     } else {
-                        self.runSlowSaves()
+                        self.runSaves()
                     }
                 }
             }
