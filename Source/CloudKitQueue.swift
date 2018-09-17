@@ -41,13 +41,13 @@ public class CloudKitQueue {
 
     // MARK: - Queue properties
 
-    private var recordsToFetch: [CKRecordID: [CKFetchCompletion]] = [:]
+    private var recordsToFetch: [CKRecord.ID: [CKFetchCompletion]] = [:]
     private var recordsToSave: [CKRecord: [CKSaveCompletion]] = [:]
-    private var recordsToDelete: [CKRecordID: [CKDeleteCompletion]] = [:]
+    private var recordsToDelete: [CKRecord.ID: [CKDeleteCompletion]] = [:]
     
-    private var recordsToSlowFetch: [CKRecordID: [CKFetchCompletion]] = [:]
+    private var recordsToSlowFetch: [CKRecord.ID: [CKFetchCompletion]] = [:]
     private var recordsToSlowSave: [CKRecord: [CKSaveCompletion]] = [:]
-    private var recordsToSlowDelete: [CKRecordID: [CKDeleteCompletion]] = [:]
+    private var recordsToSlowDelete: [CKRecord.ID: [CKDeleteCompletion]] = [:]
 
     private var queuedFetches = 0 { didSet { needsProgressUpdate() } }
     private var queuedSaves = 0 { didSet { needsProgressUpdate() } }
@@ -74,7 +74,7 @@ public class CloudKitQueue {
 
     // MARK: - Queue content checking
 
-    public func isFetching(_ recordId: CKRecordID) -> Bool {
+    public func isFetching(_ recordId: CKRecord.ID) -> Bool {
         return sync { self.recordsToFetch[recordId] != nil || self.recordsToSlowFetch[recordId] != nil }
     }
     
@@ -84,7 +84,7 @@ public class CloudKitQueue {
     
     // MARK: - Fast queue
 
-    public func fetch(_ recordId: CKRecordID, completion: @escaping CKFetchCompletion) {
+    public func fetch(_ recordId: CKRecord.ID, completion: @escaping CKFetchCompletion) {
         sync {
             if var existing = self.recordsToFetch[recordId] {
                 existing.append(completion)
@@ -112,7 +112,7 @@ public class CloudKitQueue {
         runSaves()
     }
     
-    public func delete(_ recordId: CKRecordID, completion: CKDeleteCompletion? = nil) {
+    public func delete(_ recordId: CKRecord.ID, completion: CKDeleteCompletion? = nil) {
         sync {
             if var existing = self.recordsToDelete[recordId] {
                 if let completion = completion {
@@ -134,7 +134,7 @@ public class CloudKitQueue {
 
     // MARK: - Slow queue
 
-    public func slowFetch(_ recordId: CKRecordID, completion: @escaping CKFetchCompletion) {
+    public func slowFetch(_ recordId: CKRecord.ID, completion: @escaping CKFetchCompletion) {
         sync {
             if var existing = self.recordsToSlowFetch[recordId] {
                 existing.append(completion)
@@ -162,7 +162,7 @@ public class CloudKitQueue {
         runSlowSaves()
     }
     
-    public func slowDelete(_ recordId: CKRecordID, completion: CKDeleteCompletion? = nil) {
+    public func slowDelete(_ recordId: CKRecord.ID, completion: CKDeleteCompletion? = nil) {
         sync {
             if var existing = self.recordsToSlowDelete[recordId] {
                 if let completion = completion {
