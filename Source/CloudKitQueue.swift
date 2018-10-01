@@ -57,6 +57,7 @@ public class CloudKitQueue {
     private var queuedSlowSaves = 0 { didSet { needsProgressUpdate() } }
     private var queuedSlowDeletes = 0 { didSet { needsProgressUpdate() } }
 
+    public private(set) var quotaExceeded = false
     public private(set) var timeoutUntil: Date?
 
     private var progressUpdateTimer: Timer?
@@ -306,6 +307,10 @@ public class CloudKitQueue {
             
             operation.perRecordCompletionBlock = { ckRecord, error in
                 self.queue.async {
+                    if let error = error as NSError?, error.code == CKError.Code.quotaExceeded.rawValue {
+                        self.quotaExceeded = true
+                    }
+
                     guard let completions = self.sync(execute: { self.recordsToSave[ckRecord] }) else { return }
 
                     self.sync { self.recordsToSave.removeValue(forKey: ckRecord) }
@@ -320,6 +325,8 @@ public class CloudKitQueue {
 
             operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIds, error in
                 if let error = error as NSError? {
+                    if error.code == CKError.Code.quotaExceeded.rawValue { self.quotaExceeded = true }
+
                     if !self.rateLimited(error) && error.code != CKError.Code.partialFailure.rawValue {
                         os_log("modifyRecordsCompletionBlock error: %@", type: .error, error.localizedDescription)
 
@@ -491,6 +498,10 @@ public class CloudKitQueue {
             
             operation.perRecordCompletionBlock = { ckRecord, error in
                 self.queue.async {
+                    if let error = error as NSError?, error.code == CKError.Code.quotaExceeded.rawValue {
+                        self.quotaExceeded = true
+                    }
+
                     guard let completions = self.sync(execute: { self.recordsToSlowSave[ckRecord] }) else { return }
 
                     self.sync { self.recordsToSlowSave.removeValue(forKey: ckRecord) }
@@ -505,6 +516,8 @@ public class CloudKitQueue {
 
             operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIds, error in
                 if let error = error as NSError? {
+                    if error.code == CKError.Code.quotaExceeded.rawValue { self.quotaExceeded = true }
+
                     if !self.rateLimited(error) && error.code != CKError.Code.partialFailure.rawValue {
                         os_log("modifyRecordsCompletionBlock error: %@", type: .error, error.localizedDescription)
 
@@ -634,7 +647,7 @@ public class CloudKitQueue {
 
     @discardableResult private func sync<R>(execute work: () throws -> R) rethrows -> R {
         pthread_mutex_lock(&mutex)
-        defer {pthread_mutex_unlock(&mutex) }
+        defer { pthread_mutex_unlock(&mutex) }
         return try work()
     }
 
