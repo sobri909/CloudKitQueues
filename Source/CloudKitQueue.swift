@@ -610,7 +610,9 @@ public class CloudKitQueue {
     // MARK: - Rate limit management
 
     func rateLimited(_ error: NSError) -> Bool {
-        guard error.code == CKError.requestRateLimited.rawValue else { return false }
+        let rateLimitErrors = [CKError.requestRateLimited.rawValue, CKError.zoneBusy.rawValue]
+
+        guard rateLimitErrors.contains(error.code) else { return false }
 
         sync {
             if let timeout = error.userInfo[CKErrorRetryAfterKey] as? TimeInterval {
