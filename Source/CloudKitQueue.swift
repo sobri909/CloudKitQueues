@@ -7,7 +7,7 @@ import os.log
 import CloudKit
 
 public extension NSNotification.Name {
-    public static let updatedCloudKitQueueProgress = Notification.Name("updatedCloudKitQueueProgress")
+    static let updatedCloudKitQueueProgress = Notification.Name("updatedCloudKitQueueProgress")
 }
 
 public typealias CKFetchCompletion = (_ ckRecord: CKRecord?, _ error: Error?) -> Void
