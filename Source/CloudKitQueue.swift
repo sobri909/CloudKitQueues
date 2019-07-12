@@ -236,7 +236,7 @@ public class CloudKitQueue {
                 return
             }
           
-            var recordIds = self.sync { Array(self.recordsToFetch.keys) }
+            let recordIds = self.sync { Array(self.recordsToFetch.keys) }
             
             let batch = recordIds.count <= self.batchSize ? recordIds : Array(recordIds[0 ..< self.batchSize])
             
