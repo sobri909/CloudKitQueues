@@ -183,6 +183,12 @@ public class CloudKitQueue {
         runSlowDeletes()
     }
 
+    // MARK: - Thread safe operation adding
+
+    public func add(_ operation: CKDatabaseOperation) {
+        queue.async { self.database.add(operation) }
+    }
+
     // MARK: - Queue counts
 
     public var queueTotal: Int { return sync { queuedFetches + queuedSaves + queuedDeletes } }
